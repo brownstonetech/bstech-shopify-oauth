@@ -78,10 +78,10 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 })
 public class ShopifyOrder {
 
-    @JsonProperty("shop_id")
-	private String shopId;
-    @JsonProperty("company_id")
-	private long companyId;
+//    @JsonProperty("shop_id")
+//	private String shopId;
+//    @JsonProperty("company_id")
+//	private long companyId;
     @JsonProperty("id")
     private long id;
     @JsonProperty("email")
@@ -199,30 +199,30 @@ public class ShopifyOrder {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
-    /**
-     * 
-     * @return
-     *     The companyId
-     */
-    @JsonProperty("company_id")
-    public long getCompanyId() {
-        return companyId;
-    }
+//    /**
+//     * 
+//     * @return
+//     *     The companyId
+//     */
+//    @JsonProperty("company_id")
+//    public long getCompanyId() {
+//        return companyId;
+//    }
 
-    /**
-     * 
-     * @param companyId
-     *     The companyId
-     */
-    @JsonProperty("company_id")
-    public void setCompanyId(long companyId) {
-        this.companyId = companyId;
-    }
+//    /**
+//     * 
+//     * @param companyId
+//     *     The companyId
+//     */
+//    @JsonProperty("company_id")
+//    public void setCompanyId(long companyId) {
+//        this.companyId = companyId;
+//    }
 
-    public ShopifyOrder withCompanyId(long companyId) {
-        this.companyId = companyId;
-        return this;
-    }
+//    public ShopifyOrder withCompanyId(long companyId) {
+//        this.companyId = companyId;
+//        return this;
+//    }
 
     /**
      * 
@@ -249,30 +249,30 @@ public class ShopifyOrder {
         return this;
     }
 
-    /**
-     * 
-     * @return
-     *     The shop Id
-     */
-    @JsonProperty("shop_id")
-    public String getShopId() {
-        return shopId;
-    }
-
-    /**
-     * 
-     * @param shop Id
-     *     The shop Id
-     */
-    @JsonProperty("shop_id")
-    public void setShopId(String shopId) {
-        this.shopId = shopId;
-    }
-
-    public ShopifyOrder withShopId(String shopId) {
-        this.shopId = shopId;
-        return this;
-    }
+//    /**
+//     * 
+//     * @return
+//     *     The shop Id
+//     */
+//    @JsonProperty("shop_id")
+//    public String getShopId() {
+//        return shopId;
+//    }
+//
+//    /**
+//     * 
+//     * @param shop Id
+//     *     The shop Id
+//     */
+//    @JsonProperty("shop_id")
+//    public void setShopId(String shopId) {
+//        this.shopId = shopId;
+//    }
+//
+//    public ShopifyOrder withShopId(String shopId) {
+//        this.shopId = shopId;
+//        return this;
+//    }
 
     /**
      * 
