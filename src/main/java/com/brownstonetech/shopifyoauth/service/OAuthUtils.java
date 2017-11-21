@@ -1,6 +1,9 @@
 package com.brownstonetech.shopifyoauth.service;
 
+import org.apache.oltu.oauth2.client.request.OAuthClientRequest;
 import org.apache.oltu.oauth2.common.OAuthProviderType;
+import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.apache.oltu.oauth2.common.message.types.ResponseType;
 
 import com.brownstonetech.shopifyoauth.model.OAuthParams;
 import com.brownstonetech.shopifyoauth.model.OAuthRegParams;
@@ -8,7 +11,7 @@ import com.brownstonetech.shopifyoauth.model.OAuthRegParams;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-public abstract class OAuthUtils {
+public class OAuthUtils {
 
 //    public static final String DISCOVERY_URI = "http://localhost:8080";
 
@@ -62,7 +65,15 @@ public abstract class OAuthUtils {
 //    public static final String SMART_GALLERY_TOKEN = "http://localhost:8090/oauth/token";
 //    public static final String SMART_GALLERY_REGISTER = "http://localhost:8090/oauthreg/register";
 
-    protected abstract String getRedirectUri();
+//    private String redirectUri;
+    
+//    public OAuthUtils(String redirectUri) {
+//    	this.redirectUri = redirectUri;
+//    }
+//    
+//    protected String getRedirectUri() {
+//    	return redirectUri;
+//    }
 
     public void validateRegistrationParams(OAuthRegParams oauthParams) throws ShopifyAPIException {
 
@@ -194,4 +205,18 @@ public abstract class OAuthUtils {
         }
         return value;
     }
+    
+	public String getAuthorizationURL(OAuthParams oauthParams) throws OAuthSystemException {
+		OAuthClientRequest request = OAuthClientRequest
+			.authorizationLocation(oauthParams.getAuthzEndpoint())
+			.setClientId(oauthParams.getClientId())
+			.setRedirectURI(oauthParams.getRedirectUri())
+			.setResponseType(ResponseType.CODE.toString())
+			.setScope(oauthParams.getScope())
+			.setState(oauthParams.getState())
+			.buildQueryMessage();
+		String authorizeURL = request.getLocationUri();
+		return authorizeURL;
+	}
+    
 }

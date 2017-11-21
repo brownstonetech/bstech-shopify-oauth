@@ -28,25 +28,29 @@ import com.brownstonetech.shopifyoauth.model.Webhook;
 import com.brownstonetech.shopifyoauth.model.WebhookPayload;
 import com.brownstonetech.shopifyoauth.model.WebhooksPayload;
 
-public abstract class ShopifyUtils {
+public class ShopifyUtils {
 
 	private static Logger _log = LoggerFactory.getLogger(ShopifyUtils.class);
 	
-//	private String redirectURL;
 	private OAuthParams oAuthParams;
+	private String redirectURL;
 
 	public static final String SHOPIFY_SYSTEM_TYPE="shopify";
 
 	private static final String SHOPIFY_DOMAIN_SUFFIX=".myshopify.com";
 	
-	public ShopifyUtils(OAuthParams oauthParams) {
+	public ShopifyUtils(OAuthParams oauthParams, String redirectURL) {
+		this(redirectURL);
 		this.oAuthParams = oauthParams;
 	}
 	
-	public ShopifyUtils() {
+	public ShopifyUtils(String redirectURL) {
+		this.redirectURL = redirectURL;
 	}
 	
-	protected abstract String getRedirectURL();
+	protected String getRedirectURL() {
+		return redirectURL;
+	}
 
 	public OAuthParams getOAuthParams() {
 		return oAuthParams;
