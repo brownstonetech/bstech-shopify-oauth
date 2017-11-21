@@ -1,4 +1,4 @@
-package com.browstonetech.uel;
+package com.brownstonetech.uel;
 
 import java.util.HashMap;
 import java.util.Map;

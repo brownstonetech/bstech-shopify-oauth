@@ -1,4 +1,4 @@
-package com.browstonetech.uel;
+package com.brownstonetech.uel;
 
 import java.beans.FeatureDescriptor;
 import java.util.Iterator;

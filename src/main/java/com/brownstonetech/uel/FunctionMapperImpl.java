@@ -1,4 +1,4 @@
-package com.browstonetech.uel;
+package com.brownstonetech.uel;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
