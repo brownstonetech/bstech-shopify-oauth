@@ -33,24 +33,24 @@ public class ShopifyUtils {
 	private static Logger _log = LoggerFactory.getLogger(ShopifyUtils.class);
 	
 	private OAuthParams oAuthParams;
-	private String redirectURL;
+//	private String redirectURL;
 
 	public static final String SHOPIFY_SYSTEM_TYPE="shopify";
 
 	private static final String SHOPIFY_DOMAIN_SUFFIX=".myshopify.com";
 	
-	public ShopifyUtils(OAuthParams oauthParams, String redirectURL) {
-		this(redirectURL);
+	public ShopifyUtils(OAuthParams oauthParams) {
+//		this(redirectURL);
 		this.oAuthParams = oauthParams;
 	}
 	
-	public ShopifyUtils(String redirectURL) {
-		this.redirectURL = redirectURL;
-	}
-	
-	protected String getRedirectURL() {
-		return redirectURL;
-	}
+//	public ShopifyUtils(String redirectURL) {
+//		this.redirectURL = redirectURL;
+//	}
+//	
+//	protected String getRedirectURL() {
+//		return redirectURL;
+//	}
 
 	public OAuthParams getOAuthParams() {
 		return oAuthParams;
@@ -60,7 +60,7 @@ public class ShopifyUtils {
 		this.oAuthParams = oAuthParams;
 	}
 	
-	public OAuthParams populateOAuthParams(String shopifyShopName, String clientId, String clientSecret) {
+	public ShopifyUtils(String shopifyShopName, String clientId, String clientSecret, String redirectURL) {
 		oAuthParams = new OAuthParams();
 		oAuthParams.setShopifyShopId(shopifyShopName);
 		
@@ -75,10 +75,9 @@ public class ShopifyUtils {
 		oAuthParams.setClientId(clientId);
 		oAuthParams.setClientSecret(clientSecret);
 		
-		oAuthParams.setRedirectUri(getRedirectURL());
+		oAuthParams.setRedirectUri(redirectURL);
 		oAuthParams.setState("");
 		oAuthParams.setApplication("shopify");
-		return oAuthParams;
 	}
 
 //	public String composeURL(String pathWithoutContext) {
