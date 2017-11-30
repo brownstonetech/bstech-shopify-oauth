@@ -21,6 +21,11 @@
 
 package com.brownstonetech.shopifyoauth.service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  *
  *
@@ -33,6 +38,10 @@ public class ShopifyAPIException extends Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	private List<String> errorMessages;
+	private List<String> warningMessages;
+	private List<String> infoMessages;
+	
 	public ShopifyAPIException() {
         super();    //To change body of overridden methods use File | Settings | File Templates.
     }
@@ -48,4 +57,47 @@ public class ShopifyAPIException extends Exception {
     public ShopifyAPIException(Throwable throwable) {
         super(throwable);    //To change body of overridden methods use File | Settings | File Templates.
     }
+    
+    public ShopifyAPIException error(String... messages) {
+    	if ( errorMessages == null ) {
+    		errorMessages = new ArrayList<String>(Arrays.asList(messages));
+    	} else {
+    		errorMessages.addAll(Arrays.asList(messages));
+    	}
+    	return this;
+    }
+
+    public ShopifyAPIException warn(String... messages) {
+    	if ( warningMessages == null ) {
+    		warningMessages = new ArrayList<String>(Arrays.asList(messages));
+    	} else {
+    		warningMessages.addAll(Arrays.asList(messages));
+    	}
+    	return this;
+    }
+
+    public ShopifyAPIException info(String... messages) {
+    	if ( infoMessages == null ) {
+    		infoMessages = new ArrayList<String>(Arrays.asList(messages));
+    	} else {
+    		infoMessages.addAll(Arrays.asList(messages));
+    	}
+    	return this;
+    }
+    
+    public List<String> getErrorMessages() {
+    	if ( errorMessages == null ) return Collections.emptyList();
+    	return errorMessages;
+    }
+    
+    public List<String> getWarningMessages() {
+    	if ( warningMessages == null ) return Collections.emptyList();
+    	return warningMessages;
+    }
+
+    public List<String> getInfoMessages() {
+    	if ( infoMessages == null ) return Collections.emptyList();
+    	return infoMessages;
+    }
+    
 }
