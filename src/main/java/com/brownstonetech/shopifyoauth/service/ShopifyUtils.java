@@ -27,6 +27,16 @@ import com.brownstonetech.shopifyoauth.model.OAuthParams;
 import com.brownstonetech.shopifyoauth.model.Webhook;
 import com.brownstonetech.shopifyoauth.model.WebhookPayload;
 import com.brownstonetech.shopifyoauth.model.WebhooksPayload;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 public class ShopifyUtils {
 
@@ -39,6 +49,39 @@ public class ShopifyUtils {
 
 	private static final String SHOPIFY_DOMAIN_SUFFIX=".myshopify.com";
 	
+	private static final ObjectMapper objectMapper;
+	
+	static {
+		
+		objectMapper = new ObjectMapper();
+		objectMapper.configure(SerializationFeature.INDENT_OUTPUT, false);
+		objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		objectMapper.setAnnotationIntrospector(createJaxbJacksonAnnotationIntrospector());
+		
+		JavaTimeModule javaTimeModule=new JavaTimeModule();
+		objectMapper.registerModule(javaTimeModule);
+
+//		JsonOrgModule jsonOrgModule=new JsonOrgModule();
+//		mapper.registerModule(jsonOrgModule);
+		
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.setSerializationInclusion(JsonInclude.Include.ALWAYS);
+		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+	}
+	
+    private static AnnotationIntrospector createJaxbJacksonAnnotationIntrospector() {
+
+//        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        final AnnotationIntrospector jacksonIntrospector = new JacksonAnnotationIntrospector();
+
+        // AnnotationIntrospector.pair(jacksonIntrospector, jaxbIntrospector);
+        return jacksonIntrospector;
+    }
+    
+    public ObjectMapper getObjectMapperInstance() {
+    	return objectMapper;
+    }
+    
 	public ShopifyUtils(OAuthParams oauthParams) {
 //		this(redirectURL);
 		this.oAuthParams = oauthParams;
@@ -114,7 +157,7 @@ public class ShopifyUtils {
 					WebhooksPayload.class, criteria);
 			if ( response.getStatusCode().is2xxSuccessful() ) {
 				WebhooksPayload queryResult = response.getBody();
-				_log.debug("Query result: {}", queryResult);
+				_log.debug("Query result: {}", objectMapper.writeValueAsString(queryResult));
 				if ( queryResult != null && queryResult.getWebhooks() != null
 						&& queryResult.getWebhooks().size() > 0 ) {
 					Webhook result = queryResult.getWebhooks().get(0);
@@ -134,6 +177,9 @@ public class ShopifyUtils {
 			throw new ShopifyAPIException("Failed to register Webhooks for store "+shopId+" topic: "+topic, e);
 		} catch (RestClientException e) {
 			_log.error("Register webook encounter RestClientException {}", e.getMessage());
+			throw new ShopifyAPIException("Failed to registering Webhooks for store "+shopId+" topic: "+topic, e);
+		} catch (JsonProcessingException e) {
+			_log.error("Register webook encounter JsonProcessingException {}", e.getMessage());
 			throw new ShopifyAPIException("Failed to registering Webhooks for store "+shopId+" topic: "+topic, e);
 		}
 	}
