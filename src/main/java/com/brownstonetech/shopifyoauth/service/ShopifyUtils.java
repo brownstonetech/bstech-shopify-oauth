@@ -107,15 +107,18 @@ public class ShopifyUtils {
 			criteria.put("shopId", shopId);
 			criteria.put("address", webhookURL);
 			HttpEntity<String> queryEntity = new HttpEntity<String>("dummy", headers);
+			_log.debug("Query webhook with criteria: {}", criteria);
 			ResponseEntity<WebhooksPayload> response = restTemplate.exchange(
 					"https://{shopId}.myshopify.com/admin/webhooks.json?topic={topic}&address={address}",
 					HttpMethod.GET, queryEntity,
 					WebhooksPayload.class, criteria);
 			if ( response.getStatusCode().is2xxSuccessful() ) {
 				WebhooksPayload queryResult = response.getBody();
+				_log.debug("Query result: {}", queryResult);
 				if ( queryResult != null && queryResult.getWebhooks() != null
 						&& queryResult.getWebhooks().size() > 0 ) {
 					Webhook result = queryResult.getWebhooks().get(0);
+					_log.debug("Webhook already registered, register ignored.");
 					return result.getId();
 				}
 			}
@@ -123,13 +126,15 @@ public class ShopifyUtils {
 			String uri = String.format("https://%s.myshopify.com/admin/webhooks.json", shopId);
 			HttpEntity<WebhookPayload> requestEntity = new HttpEntity<WebhookPayload>(request, headers);
 			WebhookPayload result = restTemplate.postForObject( uri, requestEntity, WebhookPayload.class);
+			_log.debug("Register webhook success: {}", result);
 			return result.getWebhook().getId();
 		} catch(HttpStatusCodeException e) {
 			String body = e.getResponseBodyAsString();
-			_log.error("Get error response "+e.getStatusCode()+" "+e.getStatusText()+", message body"+body);
+			_log.error("Get error response {} {}, message body: {}",e.getStatusCode(), e.getStatusText(), body);
 			throw new ShopifyAPIException("Failed to register Webhooks for store "+shopId+" topic: "+topic, e);
 		} catch (RestClientException e) {
-			throw new ShopifyAPIException("Failed to register Webhooks for store "+shopId+" topic: "+topic, e);
+			_log.error("Register webook encounter RestClientException {}", e.getMessage());
+			throw new ShopifyAPIException("Failed to registering Webhooks for store "+shopId+" topic: "+topic, e);
 		}
 	}
 
