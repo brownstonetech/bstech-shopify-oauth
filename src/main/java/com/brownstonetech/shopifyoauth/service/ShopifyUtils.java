@@ -150,7 +150,7 @@ public class ShopifyUtils {
 			criteria.put("topic", topic);
 			criteria.put("shopId", shopId);
 			criteria.put("address", webhookURL);
-			HttpEntity<String> queryEntity = new HttpEntity<String>("dummy", headers);
+			HttpEntity<String> queryEntity = new HttpEntity<String>(null, headers);
 			_log.debug("Query webhook with criteria: {}", criteria);
 			ResponseEntity<WebhooksPayload> response = restTemplate.exchange(
 					"https://{shopId}.myshopify.com/admin/webhooks.json?topic={topic}&address={address}",
@@ -175,7 +175,7 @@ public class ShopifyUtils {
 						deleteCriteria.put("shopId", shopId);
 						ResponseEntity<String> deleteResponse = restTemplate.exchange(
 								"https://{shopId}.myshopify.com/admin/webhooks/{hookId}.json",
-								HttpMethod.DELETE, null, String.class,
+								HttpMethod.DELETE, queryEntity, String.class,
 								deleteCriteria);
 						if ( deleteResponse.getStatusCode().is2xxSuccessful()) {
 							_log.debug("Delete existing webhook success, webhookId={}", existingHook.getId());
