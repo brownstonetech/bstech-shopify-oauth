@@ -5,6 +5,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.crypto.Mac;
@@ -130,7 +131,7 @@ public class ShopifyUtils {
 //		return sb.toString();
 //	}
 
-	public long registerWebhook(String topic, String webhookURL) throws ShopifyAPIException {
+	public long registerWebhook(String topic, String webhookURL, boolean force) throws ShopifyAPIException {
 		RestTemplate restTemplate = new RestTemplate();
 		String shopId = oAuthParams.getShopifyShopId();
 		
@@ -159,17 +160,36 @@ public class ShopifyUtils {
 				WebhooksPayload queryResult = response.getBody();
 				_log.debug("Query result: {}", objectMapper.writeValueAsString(queryResult));
 				if ( queryResult != null && queryResult.getWebhooks() != null
-						&& queryResult.getWebhooks().size() > 0 ) {
-					Webhook result = queryResult.getWebhooks().get(0);
-					_log.debug("Webhook already registered, register ignored.");
-					return result.getId();
+						&& queryResult.getWebhooks().size() > 0) {
+					if ( !force) {
+						Webhook result = queryResult.getWebhooks().get(0);
+						_log.debug("Webhook already registered, register ignored.");
+						return result.getId();
+					}
+					// delete all existing hooks
+					Iterator<Webhook> existingIter = queryResult.getWebhooks().iterator();
+					while ( existingIter.hasNext() ) {
+						Webhook existingHook = existingIter.next();
+						Map<String,String> deleteCriteria = new HashMap<String,String>();
+						deleteCriteria.put("hookId", String.valueOf(existingHook.getId()));
+						deleteCriteria.put("shopId", shopId);
+						ResponseEntity<String> deleteResponse = restTemplate.exchange(
+								"https://{shopId}.myshopify.com/admin/webhooks/{hookId}.json",
+								HttpMethod.DELETE, null, String.class,
+								deleteCriteria);
+						if ( deleteResponse.getStatusCode().is2xxSuccessful()) {
+							_log.debug("Delete existing webhook success, webhookId={}", existingHook.getId());
+						} else {
+							_log.error("Delete existing webhook failed ({}), webhookId={}: {}", deleteResponse.getStatusCode(), existingHook.getId(), deleteResponse.getBody());
+						}
+					}
 				}
 			}
 			
 			String uri = String.format("https://%s.myshopify.com/admin/webhooks.json", shopId);
 			HttpEntity<WebhookPayload> requestEntity = new HttpEntity<WebhookPayload>(request, headers);
 			WebhookPayload result = restTemplate.postForObject( uri, requestEntity, WebhookPayload.class);
-			_log.debug("Register webhook success: {}", result);
+			_log.debug("Register webhook success: {}", objectMapper.writeValueAsString(result));
 			return result.getWebhook().getId();
 		} catch(HttpStatusCodeException e) {
 			String body = e.getResponseBodyAsString();
